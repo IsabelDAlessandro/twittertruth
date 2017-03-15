@@ -1,3 +1,3 @@
-# Machine Learning Project: <Title>
+# Machine Learning Project: (Title)
 
-<StudentNames>
+(StudentNames)
