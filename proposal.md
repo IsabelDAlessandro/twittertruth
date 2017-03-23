@@ -1,7 +1,7 @@
-Isabel D’Alessandro, Kelly Kung, Yuyu Li
-CS 349
-3/22/17
-CS 349 Project Proposal 
+#Isabel D’Alessandro, Kelly Kung, Yuyu Li
+#CS 349
+#3/22/17
+#CS 349 Project Proposal 
 
 Description of Problem and Motivations
    Fake news has become more prevalent, especially after this past election. However, many people are not able to distinguish between real and fake news. One reason for this is because of how widespread news is on social media platforms, as well as social media networks serving as an echo chamber for certain types of new articles, many of which can be inaccurate. These news articles gain momentum because of spammers on social media (such as Twitter) who post about these articles many times within a short period of time. 
