@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import linear_model 
 from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import SDGClassifier
+#from sklearn.linear_model import SDGClassifier
 #from numpy import genfromtxt
 #my_data = genfromtxt('trainingData2.csv', delimiter=',')
 #my_data.shape
@@ -67,15 +67,16 @@ testXtfidf=vectorizer.fit_transform(testX).toarray()
 #devX=vectorizer.transform(dev_text).toarray()
 #textX=vectorizer.transform(test_text).toarray()
 
-#model = LogisticRegression(max_iter=200)
-#model.fit(trainXtfidf,trainy)
-#trainaccuracy = model.score(X,labels)
-#accuracy = model.score(devXtfidf, devy)
-#print 'Classification accuracy', accuracy
+model = LogisticRegression(max_iter=200)
+model.fit(trainXtfidf,trainy)
+accuracy = model.score(devXtfidf, devy)
+print 'Classification accuracy', accuracy
 
-clf=linear_model.SDGClassifier(loss='log')
-clf.fit(trainXtfidf,trainy)
-clf.score(devXtfidf,devy)
+#clf=linear_model.SDGClassifier(loss='log')
+#clf.fit(trainXtfidf,trainy)
+#clf.score(devXtfidf,devy)
+
+
 #SGDClassifier(loss='hinge') #for SVM 
 #SGDClassifier(loss='log')#for logistic regression 
 #SGDClassifier(loss='modified_huber')
