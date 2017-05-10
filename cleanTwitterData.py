@@ -2,6 +2,7 @@
 #5/9/17
 #break up the Twitter Data and run the skepticism prediction 
 from skepticsmClassifier import *
+import skepticsmClassifier
 from sklearn.model_selection import KFold
 import csv
 import random 
@@ -71,38 +72,122 @@ print "test"
 #allCSV = load_csv("eng_refined_twitter_data.csv")
 random.seed(1234)
 allCSV = load_csv("trainingData2.csv")
-allCSV = random.sample(allCSV, 10000) 
-print len(allCSV)
-print allCSV[1]
+data0 = random.sample(allCSV, 10000) 
+print len(data0)
+print data0[1]
 
 text = []
 skeptVals = []
 truthVals = []
+storyId = []
+tweetId = []
 
-for i in range(0, len(allCSV)):
-    text.append(allCSV[i][4])
-    skeptVals.append(allCSV[i][3])
-    truthVals.append(allCSV[i][2])
+for i in range(0, len(data0)):
+    tweetId.append(data0[i][1])
+    storyId.append(data0[i][0])
+    text.append(data0[i][4])
+    skeptVals.append(data0[i][3])
+    truthVals.append(data0[i][2])
 
 print "done with reading data"
 
 
 def tfidfVect(trainText, ngram_num, mindf):
     vectorizer = TfidfVectorizer(min_df = mindf, lowercase = True, ngram_range = (1,ngram_num))
-    trainX = vectorizer.fit_transform(trainText)
+    trainX = vectorizer.fit(trainText)
     return trainX.toarray()
     
 def logisticReg(trainX, yVals, regularization, maxIter):
     logreg = LogisticRegression(max_iter = maxIter, C = regularization, penalty = "l2", class_weight = "balanced", multi_class="multinomial",solver = "lbfgs" )
     logreg.fit(trainX, yVals)   
     return logreg
-    
-vecText = tfidfVect(text, 5, 3)
-logModel = logisticReg(vecText, skeptVals, .1, 10)
-predictions = predict(vecText, logisticReg)
-probabilities = logisticReg.predict_proba(vecText)
 
+def tfidfFeaturizerTest(jsonData, trainData, vectorizer):
+    data = []
+    train = []
+    for i in range(0,len(jsonData)):
+        data.append(jsonData[i])
     
+    for j in trainData.keys():
+        train.append(trainData[j]["text"])
+    
+    vect = vectorizer.fit(train)    
+    trainX = vect.transform(data)
+    return (trainX.toarray())
+        
+
+
+def writeCSV(text_param, storyId_param, textId_param, skept_param, truth_param, predSkept_param, outfilename):
+    
+    with open(outfilename, 'wb') as doc:
+        csvwriter = csv.writer(doc, dialect = "excel")
+        #this writes the col names
+        csvwriter.writerow(["text", "story ID", "text ID", "skepticism", "truth", "prob deny", "prob query", "prob support"])
+        for i in range(0, len(storyId_param)):
+            csvwriter.writerow([text_param[i], storyId_param[i], textId_param[i], skept_param[i], truth_param[i], predSkept_param[i][0], predSkept_param[i][1], predSkept_param[i][2]])
+    doc.close()
+    return (textId_param, storyId_param, predSkept_param)
+    
+model, vect, trainX = skepticsmClassifier.returnTrainandVect((7, .5, 20,5))
+testX = tfidfFeaturizerTest(text,trainX, vect)
+predictionsTest = (predict(testX, model))
+probabilitiesTest = (model.predict_proba(testX))
+#tweet_id0, story_id0, pred_0 = writeCSV(text, storyId, tweetId, skeptVals, truthVals, probabilitiesTest, "pred_skeptVals0.csv")
+
+temp1 = []
+for i in range(0, len(allCSV)):
+    if allCSV[i][1] not in tweetId:
+        temp1.append(allCSV[i])
+
+random.seed(1234)
+data1 = random.sample(temp1, 10000)
+
+text1 = []
+skeptVals1 = []
+truthVals1 = []
+storyId1 = []
+tweetId1 = []
+
+for i in range(0, len(data1)):
+    tweetId1.append(data1[i][1])
+    storyId1.append(data1[i][0])
+    text1.append(data1[i][4])
+    skeptVals1.append(data1[i][3])
+    truthVals1.append(data1[i][2])
+
+model1, vect1, trainX1 = skepticsmClassifier.returnTrainandVect((7, .5, 20,5))
+testX1 = tfidfFeaturizerTest(text1,trainX1, vect1)
+predictionsTest1 = (predict(testX1, model1))
+probabilitiesTest1 = (model1.predict_proba(testX1))
+#tweet_id1, story_id1, pred_1 = writeCSV(text1, storyId1, tweetId1, skeptVals1, truthVals1, probabilitiesTest1, "pred_skeptVals1.csv")
+
+temp2 = []
+for i in range(0, len(allCSV)):
+    if allCSV[i][1] not in tweetId and allCSV[i][1] not in tweetId1:
+        temp2.append(allCSV[i])
+
+random.seed(1234)
+data2 = random.sample(temp2, 10000)
+
+text2 = []
+skeptVals2 = []
+truthVals2 = []
+storyId2 = []
+tweetId2 = []
+
+for i in range(0, len(data2)):
+    tweetId2.append(data2[i][1])
+    storyId2.append(data2[i][0])
+    text2.append(data2[i][4])
+    skeptVals2.append(data2[i][3])
+    truthVals2.append(data2[i][2])
+
+model2, vect2, trainX2 = skepticsmClassifier.returnTrainandVect((7, .5, 20,5))
+testX2 = tfidfFeaturizerTest(text2,trainX2, vect2)
+predictionsTest2 = (predict(testX2, model2))
+probabilitiesTest2 = (model2.predict_proba(testX2))
+tweet_id2, story_id2, pred_2 = writeCSV(text2, storyId2, tweetId2, skeptVals2, truthVals2, probabilitiesTest2, "pred_skeptVals2.csv")
+
 
 #storyId = [tweet[0] for tweet in allCSV]
 #storyId = list(set(storyId))
