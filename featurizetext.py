@@ -1,5 +1,4 @@
-#issues: 1)getting the same accuracy despite changing parameters for tfidf 
-#or logistic regression 2) 'cannot import name SDGClassifier' 
+
 
 
 import numpy as np
@@ -8,7 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import linear_model 
 from sklearn.linear_model import LogisticRegression
-#from sklearn.linear_model import SDGClassifier
+#LBFGS
 #from numpy import genfromtxt
 #my_data = genfromtxt('trainingData2.csv', delimiter=',')
 #my_data.shape
@@ -46,8 +45,6 @@ train_file = "trainingData2.csv"
 dev_file = "dev.csv"
 test_file="test.csv"
 
-trainX=featurizetext(train_file)
-
 trainX,trainy=featurizetext(train_file)
 devX,devy=featurizetext(dev_file)
 testX,testy=featurizetext(test_file)
@@ -67,24 +64,29 @@ testXtfidf=vectorizer.fit_transform(testX).toarray()
 #devX=vectorizer.transform(dev_text).toarray()
 #textX=vectorizer.transform(test_text).toarray()
 
-model = LogisticRegression(max_iter=200)
-model.fit(trainXtfidf,trainy)
-accuracy = model.score(devXtfidf, devy)
-print 'Classification accuracy', accuracy
+#model = LogisticRegression(max_iter=200,class_weight='balanced')
+#model.fit(trainXtfidf,trainy)
+#accuracy = model.score(devXtfidf, devy)
+#print 'Classification accuracy', accuracy
 
-#clf=linear_model.SDGClassifier(loss='log')
-#clf.fit(trainXtfidf,trainy)
-#clf.score(devXtfidf,devy)
+clf=linear_model.SGDClassifier(alpha=0.0000001, average=False, 
+class_weight='balanced', epsilon=0.001, eta0=0.0000, fit_intercept=True,
+l1_ratio=0.15, learning_rate='optimal', loss='hinge', n_iter=5, n_jobs=1,
+penalty='l2', power_t=0.5, random_state=None, shuffle=True, verbose=0, 
+warm_start=False) 
+clf.fit(trainXtfidf,trainy)
+print clf.score(devXtfidf,devy)
+
+#gridsearch: 
+#for l in ['hinge','log','modified_huber','squared_hinge','perceptron']:#loss 
+#    for a in [0.1,0.01,0.001,1e-4,1e-5]: #alpha 
+#        for e in [0.1,0.01,0.001,0.0001]: #epsilon 
+#            for et in [0,0.1,0.01,0.001]: #eta
+#                for n in [5,10,15]: #n_iter
+#                    clf=linear_model.SGDClassifier(alpha=a, average=False, class_weight='balanced',
+#                    epsilon=e, eta=et, fit_intercept=True, l1_ratio=0.15, learning_rate='optimal', 
+#                    loss=l, n_iter=n, n_jobs=1, penalty='l2',power_t=0.5, random_state=None, 
+#                    shuffle=True, verbose=0, warm_start=False) 
 
 
-#SGDClassifier(loss='hinge') #for SVM 
-#SGDClassifier(loss='log')#for logistic regression 
-#SGDClassifier(loss='modified_huber')
-#SGDClassifier(loss='squared_hinge')
-#SGDClassifier(loss='perceptron')
-#SGDClassifier(alpha=0.0001, average=False, class_weight=None, epsilon=0.1,
-#        eta0=0.0, fit_intercept=True, l1_ratio=0.15,
-#        learning_rate='optimal', loss='hinge', n_iter=5, n_jobs=1,
-#        penalty='l2', power_t=0.5, random_state=None, shuffle=True,
-#        verbose=0, warm_start=False)
-#print(clf.predict([[-0.8, -1]]))
+
