@@ -3,6 +3,7 @@
 #Classification of skeptcism
 
 import json
+import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
@@ -135,35 +136,35 @@ def returnTrainandVect(maxParams):
 
 with open("trainJSONset_0.json") as fileData:
     trainData0 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_1.json") as fileData:
-#    trainData1 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_2.json") as fileData:
-#    trainData2 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_3.json") as fileData:
-#    trainData3 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_4.json") as fileData:
-#    trainData4 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_5.json") as fileData:
-#    trainData5 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_6.json") as fileData:
-#    trainData6 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_7.json") as fileData:
-#    trainData7 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_8.json") as fileData:
-#    trainData8 = json.load(fileData)
-#fileData.close()
-#with open("trainJSONset_9.json") as fileData:
-#    trainData9 = json.load(fileData)
-#fileData.close() 
-#            
+fileData.close()
+with open("trainJSONset_1.json") as fileData:
+    trainData1 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_2.json") as fileData:
+    trainData2 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_3.json") as fileData:
+    trainData3 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_4.json") as fileData:
+    trainData4 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_5.json") as fileData:
+    trainData5 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_6.json") as fileData:
+    trainData6 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_7.json") as fileData:
+    trainData7 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_8.json") as fileData:
+    trainData8 = json.load(fileData)
+fileData.close()
+with open("trainJSONset_9.json") as fileData:
+    trainData9 = json.load(fileData)
+fileData.close() 
+            
 #acc0, param0, pred0, prob0 = trainModel(trainData0)
 #acc1, param1, pred1, prob1 = trainModel(trainData1)
 #acc2, param2, pred2, prob2 = trainModel(trainData2)
@@ -174,7 +175,7 @@ with open("trainJSONset_0.json") as fileData:
 #acc7, param7, pred7, prob7 = trainModel(trainData7)
 #acc8, param8, pred8, prob8 = trainModel(trainData8)           
 #acc9, param9, pred9, prob9 = trainModel(trainData9)
-#
+
 #accuracies = np.array([acc0, acc1, acc2, acc3, acc4, acc5, acc6, acc7, acc8, acc9])
 #meanAcc = np.mean(accuracies, axis = 0)
 ##minAcc = np.argmin(meanAcc)
@@ -185,7 +186,7 @@ with open("trainJSONset_0.json") as fileData:
 #maxAcc = np.argmax(meanAcc)
 #param1[maxAcc]
 
-#end up choosing: 5, .1, 10, 3
+#end up choosing: 7, .5, 20,5)
 #
 
 with open("testJSONset_0.json") as fileData:
@@ -222,32 +223,17 @@ fileData.close()
 accuraciesTest = []
 predictionsTest = []
 probabilitiesTest = []
-#data = {}
-#ids = []
-#for i in trainData0:
-#    data[i] = trainData0[i]
-#    ids.append(i)
-#for j in testData9:
-#    data[j] = testData9[j]
-#    ids.append(j)
+yVals = []
+
+testData = [testData0, testData1, testData2, testData3, testData4, testData5, testData6, testData7, testData8, testData9]
 vectorizer = TfidfVectorizer(min_df = 5, lowercase = True, ngram_range = (1,7))
 train0X, train0Y =tfidfFeaturizer(trainData0, 7, 5)
-test0X, test0Y = tfidfFeaturizerTest(testData9,trainData0, vectorizer)
-#mindf = 5, ngram = 7, .5 = reg, max iter = 20
-
-#train0X = []
-#train0Y = []
-#test0X = []
-#test0Y = []
-#for i in range(0,len(X)):
-#    if ids[i] in trainData0.keys():
-#        train0X.append(X[i])
-#        train0Y.append(Y[i])
-#    if ids[i] in testData9.keys():
-#        test0X.append(X[i])
-#        test0Y.append(Y[i])
-
 model = logisticReg(train0X, train0Y, .5, 20)
-accuraciesTest.append(accuracy(model, test0X, test0Y))
-predictionsTest.append(predict(test0X, model))
-probabilitiesTest.append(model.predict_proba(test0X))
+
+#mindf = 5, ngram = 7, .5 = reg, max iter = 20
+for i in range(0,len(testData)):
+    test0X, test0Y = tfidfFeaturizerTest(testData[i],trainData0, vectorizer)
+    yVals.append(test0Y)
+    accuraciesTest.append(accuracy(model, test0X, test0Y))
+    predictionsTest.append(predict(test0X, model))
+    probabilitiesTest.append(model.predict_proba(test0X))
