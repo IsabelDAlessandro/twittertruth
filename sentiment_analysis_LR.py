@@ -75,7 +75,7 @@ def train_test(dataX, datay, alpha, n_iter, eta):
     prob_list = []
     accuracy_list = []
     train_matX, train_maty, test_matX, test_maty = cross_validate(dataX, datay)
-    lr = linear_model.SGDClassifier(loss='modified_huber', penalty='l2', alpha=alpha, l1_ratio=0, n_iter=n_iter,
+    lr = linear_model.SGDClassifier(loss='log', penalty='l2', alpha=alpha, l1_ratio=0, n_iter=n_iter,
     epsilon=0.1, eta0=eta, class_weight='balanced')
     for split in range(len(train_maty)):
         #print len(train_matX)
@@ -95,11 +95,13 @@ def train_test(dataX, datay, alpha, n_iter, eta):
     return (preds, probs, accuracy_list)
 
 def gridsearch(filename):
-    n_gram_vals = [3,4,5,6]
+    n_gram_vals = [3,4,5,6,7]
     alpha_vals = [.5, .1, 1e-2, 1e-3, 1e-4 ,1e-5]
     n_iter_vals = [10, 25, 50]
     eta_vals = [1e-3, 1e-4, 1e-5]
     
+    all_accuracy = []
+    hyperparams = []
     for n_gram in n_gram_vals:
         X, y = tfidf(filename, n_gram)
         for alpha in alpha_vals:
@@ -107,9 +109,16 @@ def gridsearch(filename):
                 for eta in eta_vals:
                     preds, probs, accuracy_list = train_test(X, y, alpha, n_iter, eta)
                     avg_accuracy = np.mean(accuracy_list)
-                    print "Average accuracy with cross-validation with n_gram = {}, alpha = {}, n_iter = {}, eta = {} is  {}".format(n_gram, alpha, n_iter, eta, avg_accuracy)
-
-gridsearch("sentiment_train.txt")
+                    all_accuracy.append(avg_accuracy)
+                    string = "Average accuracy with cross-validation with n_gram = {}, alpha = {}, n_iter = {}, eta = {} is  {}".format(n_gram, alpha, n_iter, eta, avg_accuracy)
+                    hyperparams.append(string)
+                    #print "Average accuracy with cross-validation with n_gram = {}, alpha = {}, n_iter = {}, eta = {} is  {}".format(n_gram, alpha, n_iter, eta, avg_accuracy)
+    max_ind = np.argmax(all_accuracy)
+    print "------------------"
+    print "OPTIMIZED HYPERPARAMETERS:"
+    print hyperparams[max_ind]
+    
+# gridsearch("sentiment_train.txt")
 '''
 X = np.array([[10,11,12], [20,21,22], [30,31,32], [40,41,41], [50,51,52], [60,61,62], [70,71,72], [80,81,82], [90,91,92], [100,101,102]])
 train_mat, test_mat = cross_validate(X)
