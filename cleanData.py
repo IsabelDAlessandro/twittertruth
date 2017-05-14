@@ -1,11 +1,10 @@
+#read the data and clean it up
+
 import csv
 import numpy as np
 import random
 import string
 
-#Kelly Kung
-#4/2/17
-#read the data and clean it up
 
 #read in the data
 
