@@ -7,27 +7,27 @@ https://docs.google.com/document/d/1v2F9lBEFXeheDuA5a9ETVMFDzaE0Ct6iuMUCF3p_jew/
 
 Descriptions of Files in this Repository: 
 
-analysisPlots.py: Analyze and display results of skepticism classifier 
+*analysisPlots.py: Analyze and display results of skepticism classifier 
 
-cleanSkepticismTwitterData.py: Cleans data obtained from RumorEval for use in skepticism classifier
+*cleanSkepticismTwitterData.py: Cleans data obtained from RumorEval for use in skepticism classifier
 
-cleanTakisData.py: Cleans original twitter data by using only English-language text, removing irrelevant characters, etc. 
+*cleanTakisData.py: Cleans original twitter data by using only English-language text, removing irrelevant characters, etc. 
 
-crossValidateText.py: Apply cross-validation to original twitter data set 
+*crossValidateText.py: Apply cross-validation to original twitter data set 
 
-featurizeText.py: Featurize original twitter data set using tfidf and generate true/false predictions using text only 
+*featurizeText.py: Featurize original twitter data set using tfidf and generate true/false predictions using text only 
 
-makeTrainingandTestingData.py: split original twitter data into training, development, and testing files 
+*makeTrainingandTestingData.py: split original twitter data into training, development, and testing files 
 
-sentiment_analysis_LR.py: sentiment classifier; generates probabilities of each sentiment value('very positive', 'positive', 'OK','negative','very negative')
+*sentiment_analysis_LR.py: sentiment classifier; generates probabilities of each sentiment value('very positive', 'positive', 'OK','negative','very negative')
 
-sentiment_analysis_train.py: featurizes tweets from TwitterTrails data for use with sentiment classifier 
+*sentiment_analysis_train.py: featurizes tweets from TwitterTrails data for use with sentiment classifier 
 
-sentiment_train.txt: Apply cross-validation to SemEval data for use in sentiment classifier 
+*sentiment_train.txt: Apply cross-validation to SemEval data for use in sentiment classifier 
 
-skepticismClassifier.py: skepticism classifier; generates probabilities of each skepticism value(support, deny, query)
+*skepticismClassifier.py: skepticism classifier; generates probabilities of each skepticism value(support, deny, query)
 
-skepticismTruthClassifier.py: uses skepticism values to predict truth values 
+*skepticismTruthClassifier.py: uses skepticism values to predict truth values 
 
 
 Data: 
