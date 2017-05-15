@@ -1,7 +1,8 @@
 '''
 Yuyu Li, April 2017
-Sentiment analysis portion. Based off of SemEval Task 4E, to classify Tweets into 5 different categories:
-very negative, negative, neutral, positive, very positive on a 5-point scale (1 to 5). 
+Sentiment analysis portion. Based off of SemEval Task 4E, to classify Tweets into 4 different categories:
+very negative, negative, positive, very positive on a 5-point scale excluding 3, since this was the
+neutral class (1,2,4,5). 
 '''
 import sys
 import re 
@@ -16,6 +17,8 @@ auth.set_access_token("860217211616677888-UrbfhHrpFISehSsee1unY4USOduJu5o", "YFq
 
 api = tweepy.API(auth)
 
+''' obtain the tweet IDs and labels to make the X and y matrices, respectively.
+use the Twitter API to get the text of the tweets and return the X and y. '''
 def load_data(filename):
     error_count = 0
     matrix = []
@@ -50,6 +53,9 @@ def filtered(dataX, datay):
     # print y
     return (X,y)
     
+''' divide up the data into 10 training and testing sets since the data set is
+relatively small. save these into training and testing matrices where each row 
+corresponds to the indices for a given cross-validation split. '''
 def cross_validate(X, y):
     train_matX = []
     train_maty = []
@@ -89,6 +95,7 @@ def tfidf(filename, n_gram):
     return (dataX, datay)
 '''
 
+''' featurize the text using TFIDF values.'''
 def tfidf(n_gram, trainX, testX):
     vec = TfidfVectorizer(lowercase=True, ngram_range=(1,n_gram))
     vec = vec.fit(trainX)
@@ -110,6 +117,8 @@ def meansq_accuracy(y, pred):
     return msa
 '''
 
+''' using logistic regression, train and test the model for each cross-validation
+split and obtain predictions, probabilities, and accuracy values for each. '''
 def train_test(dataX, datay, n_gram, alpha, n_iter, eta):
     pred_list = []
     prob_list = []
@@ -129,11 +138,13 @@ def train_test(dataX, datay, n_gram, alpha, n_iter, eta):
         accuracy = lr.score(tfidf_testX, test_maty[split])
         accuracy_list.append(accuracy)
     preds = np.array(pred_list)
-    # print preds
+    print "predictions for this hyperparameter combo: {}".format(preds)
     probs = np.array(prob_list)
-    # print probs
+    print "probabilities for this hyperparameter combo: {}".format(probs)
     return (preds, probs, accuracy_list)
 
+''' tune hyperparameters using gridsearch and obtain the combination used to get 
+the highest accuracy. '''
 def gridsearch(filename):
     n_gram_vals = [3,4,5,6,7]
     alpha_vals = [.5, .1, 1e-2, 1e-3, 1e-4 ,1e-5]
@@ -164,4 +175,5 @@ def gridsearch(filename):
     print all_accuracy[max_ind]
     return (hyperparams[max_ind], all_accuracy[max_ind])
 
+gridsearch("sentiment_train.txt")
 # hyperparams, accuracy = gridsearch("sentiment_train.txt")
