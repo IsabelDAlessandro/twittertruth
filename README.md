@@ -23,8 +23,6 @@ Descriptions of Files in this Repository:
 
 *combined_sentiment_skepticism_classifier.py: featurizes tweets from TwitterTrails data for use with sentiment classifier 
 
-*sentiment_train.txt: Apply cross-validation to SemEval data for use in sentiment classifier 
-
 *skepticismClassifier.py: skepticism classifier; generates probabilities of each skepticism value(support, deny, query)
 
 *skepticismTruthClassifier.py: uses skepticism values to predict truth values 
