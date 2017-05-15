@@ -1,7 +1,7 @@
 '''
 Yuyu Li, April 2017
 Sentiment analysis portion. Based off of SemEval Task 4E, to classify Tweets into 5 different categories:
-very negative, negative, neutral, positive, very positive on a 5-point scale (-2 to 2). 
+very negative, negative, neutral, positive, very positive on a 5-point scale (1 to 5). 
 '''
 import sys
 import re 
@@ -24,7 +24,7 @@ def load_data(filename):
             row = re.split(r'\t+', line.rstrip())
             matrix.append(row)
     # print matrix
-    #matrix[:][0] = api.get_status(matrix[:][0])
+    # matrix[:][0] = api.get_status(matrix[:][0])
     matrix = np.array(matrix)
     dataX = np.array(matrix[:, 0])
     try:
@@ -34,8 +34,21 @@ def load_data(filename):
         error_count += 1
     datay = np.array(matrix[:, 2])
     #print error_count
-    #print trainX.shape[0]
     return (dataX, datay)
+
+def filtered(dataX, datay):
+    # count = 0
+    # total = datay.shape[0]
+    X = []
+    y = []
+    for row in range(datay.shape[0]):
+        if datay[row] != '3':
+            X.append(dataX[row])
+            y.append(datay[row])
+    X = np.array(X)
+    y = np.array(y)
+    # print y
+    return (X,y)
     
 def cross_validate(X, y):
     train_matX = []
@@ -49,10 +62,10 @@ def cross_validate(X, y):
         test_tempX = []
         test_tempy = []
         for i in range(len(train_split)):
-            train_tempX.append(X[train_split[i], :])
+            train_tempX.append(X[train_split[i]])
             train_tempy.append(y[train_split[i]])
         for i in range(len(test_split)):
-            test_tempX.append(X[test_split[i], :])
+            test_tempX.append(X[test_split[i]])
             test_tempy.append(y[test_split[i]])
         train_matX.append(train_tempX)
         train_maty.append(train_tempy)
@@ -63,14 +76,41 @@ def cross_validate(X, y):
     test_matX = np.array(test_matX)
     test_maty = np.array(test_maty)
     return (train_matX, train_maty, test_matX, test_maty)
-       
+
+'''              
 def tfidf(filename, n_gram):
-    dataX, datay = load_data(filename)
+    pre_X, pre_y = load_data(filename)
+    # print (pre_X.shape, pre_y.shape)
+    dataX, datay = filtered(pre_X, pre_y)
+    # print (dataX.shape, datay.shape)
     vec = TfidfVectorizer(lowercase=True, ngram_range=(1,n_gram))
     dataX = vec.fit_transform(dataX).toarray()
+    # print dataX.shape
     return (dataX, datay)
-    
-def train_test(dataX, datay, alpha, n_iter, eta):
+'''
+
+def tfidf(n_gram, trainX, testX):
+    vec = TfidfVectorizer(lowercase=True, ngram_range=(1,n_gram))
+    vec = vec.fit(trainX)
+    trainX = vec.transform(trainX).toarray()
+    testX = vec.transform(testX).toarray()
+    return (trainX, testX)
+
+'''
+def meansq_accuracy(y, pred):
+    num_test = y.shape[0]
+    error_sum = 0
+    for i in range(y.shape[0]):
+        if ((pred[i] == y[i]) or (pred[i] == '5' and y[i] == '4') or (pred[i] == '4' and y[i] == '5')
+        or (pred[i] == '1' and y[i] == '2') or (pred[i] == '2' and y[i] == '1')):
+            error_sum = error_sum
+        else:
+            error_sum += 1
+    msa = 1-((1/float(num_test)) * error_sum)
+    return msa
+'''
+
+def train_test(dataX, datay, n_gram, alpha, n_iter, eta):
     pred_list = []
     prob_list = []
     accuracy_list = []
@@ -78,20 +118,20 @@ def train_test(dataX, datay, alpha, n_iter, eta):
     lr = linear_model.SGDClassifier(loss='log', penalty='l2', alpha=alpha, l1_ratio=0, n_iter=n_iter,
     epsilon=0.1, eta0=eta, class_weight='balanced')
     for split in range(len(train_maty)):
-        #print len(train_matX)
-        #print np.array(train_matX[split]).shape
-        #print np.array(train_maty[split]).shape
-        #print np.array(test_matX[split]).shape
-        #print np.array(test_maty[split]).shape
-        lr.fit(train_matX[split], train_maty[split])
-        pred = lr.predict(test_matX[split])
+        tfidf_trainX, tfidf_testX = tfidf(n_gram, train_matX[split], test_matX[split])
+        lr.fit(tfidf_trainX, train_maty[split])
+        pred = lr.predict(tfidf_testX)
+        #print test_matX[split]
         pred_list.append(pred)
-        prob = lr.predict_proba(test_matX[split])
+        prob = lr.predict_proba(tfidf_testX)
         prob_list.append(prob)
-        accuracy = lr.score(test_matX[split], test_maty[split])
+        #print prob
+        accuracy = lr.score(tfidf_testX, test_maty[split])
         accuracy_list.append(accuracy)
     preds = np.array(pred_list)
+    # print preds
     probs = np.array(prob_list)
+    # print probs
     return (preds, probs, accuracy_list)
 
 def gridsearch(filename):
@@ -100,28 +140,28 @@ def gridsearch(filename):
     n_iter_vals = [10, 25, 50]
     eta_vals = [1e-3, 1e-4, 1e-5]
     
+    pre_X, pre_y = load_data(filename)
+    X, y = filtered(pre_X, pre_y)
+    
     all_accuracy = []
     hyperparams = []
     for n_gram in n_gram_vals:
-        X, y = tfidf(filename, n_gram)
+        # X, y = tfidf(filename, n_gram)
         for alpha in alpha_vals:
             for n_iter in n_iter_vals:
                 for eta in eta_vals:
-                    preds, probs, accuracy_list = train_test(X, y, alpha, n_iter, eta)
+                    preds, probs, accuracy_list = train_test(X, y, n_gram, alpha, n_iter, eta)
                     avg_accuracy = np.mean(accuracy_list)
                     all_accuracy.append(avg_accuracy)
-                    string = "Average accuracy with cross-validation with n_gram = {}, alpha = {}, n_iter = {}, eta = {} is  {}".format(n_gram, alpha, n_iter, eta, avg_accuracy)
-                    hyperparams.append(string)
-                    #print "Average accuracy with cross-validation with n_gram = {}, alpha = {}, n_iter = {}, eta = {} is  {}".format(n_gram, alpha, n_iter, eta, avg_accuracy)
+                    string = "Average accuracy with cross-validation for n_gram = {}, alpha = {}, n_iter = {}, eta = {} is  {}".format(n_gram, alpha, n_iter, eta, avg_accuracy)
+                    hyperparams.append([n_gram, alpha, n_iter, eta])
+                    print string
     max_ind = np.argmax(all_accuracy)
     print "------------------"
     print "OPTIMIZED HYPERPARAMETERS:"
-    print hyperparams[max_ind]
-    
-# gridsearch("sentiment_train.txt")
-'''
-X = np.array([[10,11,12], [20,21,22], [30,31,32], [40,41,41], [50,51,52], [60,61,62], [70,71,72], [80,81,82], [90,91,92], [100,101,102]])
-train_mat, test_mat = cross_validate(X)
-print train_mat
-print test_mat
-'''
+    print hyperparams[max_ind] 
+    print "OPTIMIZED ACCURACY:"
+    print all_accuracy[max_ind]
+    return (hyperparams[max_ind], all_accuracy[max_ind])
+
+# hyperparams, accuracy = gridsearch("sentiment_train.txt")
