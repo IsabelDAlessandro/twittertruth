@@ -1,6 +1,6 @@
-#Kelly Kung
-#this file tries to separate the test and training Data for skepticism
+#CS 349- Isabel D'Alessandro, Kelly Kung, Yuyu Li
 #5/14/17
+#split original twitter data into training, development, and testing files
 
 import skepticsmClassifier as skc
 from sklearn.model_selection import train_test_split
