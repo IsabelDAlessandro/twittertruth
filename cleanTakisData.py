@@ -1,13 +1,13 @@
+#CS 349 -  Isabel D'Alessandro, Kelly Kung, Yuyu Li
+#4/2/17
+#Cleans original twitter data by using only English-language text, removing irrelevant characters, etc.
+
 import csv
 import numpy as np
 import random
 import string
 
-#Kelly Kung
-#4/2/17
-#read the data and clean it up
 
-#read in the data
 
 def load_csv(filename):
     """read data in CSV format"""
