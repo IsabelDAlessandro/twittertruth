@@ -1,6 +1,7 @@
 '''
 Yuyu Li, May 2017
-Featurizes Tweets from TwitterTrails data.
+Featurizes Tweets from TwitterTrails data and classifies each as either true or false.
+Uses sentiment and skepticism probabilities as features.
 '''
 import random
 import sys
@@ -11,8 +12,11 @@ import sentiment_analysis_LR as salr
 from sklearn import linear_model
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+# load best hyperparameters and accuracy from sentiment classifier
 hyperparams, accuracy = salr.gridsearch("sentiment_train.txt")
 
+''' reads in csv populated with tweets and their skepticism probabilities in order
+to use these as features. save other information to match up tweets and stories. '''
 def load_csv(filename):
     with open(filename, 'rU') as csv_data:
         data = []
@@ -41,6 +45,9 @@ def load_csv(filename):
         
         return (all_text, X, y, all_other_data, data)
 
+''' applies TFIDF to featurize Takis's tweet text, then uses the optimized hyperparameter combination
+from the sentiment classifier to obtain probabilities between the four classes (extremely negative, 
+negative, positive, extremely positive) to use as features for this combined classifier. '''
 def sentiment_featurize(filename, text, X):
     lr = linear_model.SGDClassifier(loss='log', penalty='l2', alpha=hyperparams[1], l1_ratio=0, n_iter=hyperparams[2],
     epsilon=0.1, eta0=hyperparams[3], class_weight='balanced')
@@ -54,6 +61,12 @@ def sentiment_featurize(filename, text, X):
     prob = lr.predict_proba(tfidf_X)
     return prob
 
+''' combines the sentiment and skepticism probabilities into a feature vector, doubling the probability
+vector for skepticism and concatenating it since it had better accuracy. (3 features for the 3-class 
+skepticism classifier, 3 features for the 3-class skepticism classifier (again), and 4 features for the
+4-class sentiment classifier for a total of 10 features.)
+randomly splits the 51 stories into training, dev, and test sets using an 80-10-10 split.
+'''
 def combine(filename):
     all_text, X, y, all_other_data, data = load_csv(filename)
     prob = sentiment_featurize("sentiment_train.txt", all_text, X)
@@ -65,13 +78,6 @@ def combine(filename):
     X = np.array(X)
     #print X
     
-    '''
-    for row in range(X.shape[0]):
-        for col in range(X.shape[1]):
-            X[row][col] = float(X[row][col])
-    #print "floated: {}".format(X)
-    '''
-
     unique_story_ids = set([row[0] for row in all_other_data])
     random.seed(5) 
     story_train = random.sample(unique_story_ids, 40)
@@ -106,7 +112,8 @@ def combine(filename):
     testX = testX.astype(float)
     return (trainX, trainy, devX, devy, testX, testy)
   
-    
+''' tune hyperparameters using gridsearch and obtain the combination used to get 
+the highest accuracy. '''   
 def logreg_gridsearch(trainX, trainy, devX, devy, testX, testy):
     preds = []
     probs = []
