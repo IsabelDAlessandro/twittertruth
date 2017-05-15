@@ -1,3 +1,8 @@
+#CS 349- Isabel D'Alessandro, Kelly Kung, Yuyu Li
+#5/17
+#Apply cross-validation to original twitter data set
+
+
 import numpy as np
 import pandas as pd
 import random 
