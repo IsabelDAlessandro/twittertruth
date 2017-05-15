@@ -7,6 +7,8 @@ https://docs.google.com/document/d/1v2F9lBEFXeheDuA5a9ETVMFDzaE0Ct6iuMUCF3p_jew/
 
 Descriptions of Files in this Repository: 
 
+analysisPlots.py: Analyze and display results of skepticism classifier 
+
 cleanSkepticismTwitterData.py: Cleans data obtained from RumorEval for use in skepticism classifier
 
 cleanTakisData.py: Cleans original twitter data by using only English-language text, removing irrelevant characters, etc. 
