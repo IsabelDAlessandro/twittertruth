@@ -1,6 +1,6 @@
-#Kelly Kung
-#5/9/17
-#break up the Twitter Data and run the skepticism prediction 
+
+#CS 349 -  Isabel D'Alessandro, Kelly Kung, Yuyu Li
+#Cleans data obtained from RumorEval for use in skepticism classifier
 
 from skepticsmClassifier import *
 import skepticsmClassifier
