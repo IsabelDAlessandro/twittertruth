@@ -27,6 +27,8 @@ sentiment_train.txt: Apply cross-validation to SemEval data for use in sentiment
 
 skepticismClassifier.py: skepticism classifier; generates probabilities of each skepticism value(support, deny, query)
 
+skepticismTruthClassifier.py: uses skepticism values to predict truth values 
+
 
 Data: 
 https://drive.google.com/drive/folders/0B7umSMDTRTHBMmdUbzFQZkFQaTg?usp=sharing
