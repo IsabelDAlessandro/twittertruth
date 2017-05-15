@@ -1,7 +1,6 @@
-'''
-Yuyu Li, May 2017
-Featurizes Tweets from TwitterTrails data.
-'''
+#CS 349 - Isabel D'Alessandro, Kelly Kung, Yuyu Li
+#5/17
+#featurizes tweets from TwitterTrails data for use with sentiment classifier
 
 import sys
 import re 
