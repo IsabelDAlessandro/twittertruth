@@ -1,7 +1,6 @@
-#Kelly Kung
-#CS 349
+#CS 349 - Isabel D'Alessandro, Kelly Kung, Yuyu Li
 #5/14/17
-#Classification of skeptcism
+#skepticism classifier; generates probabilities of each skepticism value(support, deny, query)
 
 import json
 import sklearn
