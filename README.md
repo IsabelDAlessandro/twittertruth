@@ -19,9 +19,9 @@ featurizeText.py: Featurize original twitter data set using tfidf and generate t
 
 makeTrainingandTestingData.py: split original twitter data into training, development, and testing files 
 
-sentiment_analysis_LR.py: 
+sentiment_analysis_LR.py: sentiment classifier; generates probabilities of each sentiment value('very positive', 'positive', 'OK','negative','very negative')
 
-sentiment_analysis_train.py: 
+sentiment_analysis_train.py: featurizes tweets from TwitterTrails data for use with sentiment classifier 
 
 sentiment_train.txt: Apply cross-validation to SemEval data for use in sentiment classifier 
 
